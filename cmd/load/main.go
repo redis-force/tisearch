@@ -6,7 +6,7 @@ import (
 	"os"
 	"strings"
 
-	"git.inke.cn/BackendPlatform/golang/logging"
+	"github.com/redis-force/tisearch/logging"
 	"github.com/redis-force/tisearch/model"
 	"github.com/redis-force/tisearch/storage/es"
 )

@@ -1,22 +1,25 @@
 package model
 
-import "time"
+import (
+	"time"
+)
 
 type Tweet struct {
-	Creator    string    `json:"creator" gorm:"column:creator"`
-	Content    string    `json:"content" gorm:"column:content"`
-	CreateTime time.Time `json:"create_time" gorm:"column:create_time"`
+	ID      int64     `json:"id" gorm:"column:id"`
+	User    string    `json:"user" gorm:"column:user"`
+	Content string    `json:"content" gorm:"column:content"`
+	Time    time.Time `json:"time" gorm:"column:time,type:timestamp"`
 }
 
-type Album struct {
-	Gender      string    `json:"gender"`
-	Name        string    `json:"name"`
-	Location    string    `json:"location"`
-	Picture     string    `json:"picture"`
-	Cars        string    `json:"cars"`
-	Interests   string    `json:"interests"`
-	Birthday    time.Time `json:"birthday"`
-	Coordinates string    `json:"coordinates"`
+type User struct {
+	Gender      int       `json:"gender" gorm:"column:gender"`
+	Name        string    `json:"name" gorm:"column:name"`
+	Location    string    `json:"location" gorm:"column:location"`
+	Picture     string    `json:"picture" gorm:"column:picture"`
+	Cars        string    `json:"cars" gorm:"column:cars"`
+	Interests   string    `json:"interests" gorm:"column:interests"`
+	Birthday    time.Time `json:"birthday" gorm:"column:birthday,type:timestamp"`
+	Coordinates string    `json:"coordinates" gorm:"column:coordinates"`
 }
 
 type Suggestion struct {
@@ -29,10 +32,10 @@ type TweetSuggestionResponse struct {
 	Data  Suggestion `json:"data"`
 }
 
-type AlbumSearchResponse struct {
-	Code  int     `json:"code"`
-	Error string  `json:"error"`
-	Data  []Tweet `json:"data"`
+type UserSearchResponse struct {
+	Code  int    `json:"code"`
+	Error string `json:"error"`
+	Data  []User `json:"data"`
 }
 
 type TweetSearchResponse struct {
@@ -41,7 +44,7 @@ type TweetSearchResponse struct {
 	Data  []Tweet `json:"data"`
 }
 
-type AlbumSuggestionResponse struct {
+type UserSuggestionResponse struct {
 	Code  int        `json:"code"`
 	Error string     `json:"error"`
 	Data  Suggestion `json:"data"`

@@ -1,6 +1,8 @@
 package service
 
 import (
+	"context"
+	"fmt"
 	"os"
 	"strings"
 
@@ -17,9 +19,9 @@ var (
 )
 
 const (
-	indexType  = "doc"
-	tweetIndex = "tisearch-tweet"
-	albumIndex = "tisearch-album"
+	indexType            = "doc"
+	tweetSuggestionIndex = "tisearch-tweet-suggestion"
+	userSuggestionIndex  = "tisearch-user-suggestion"
 )
 
 type TiSearchService struct {
@@ -37,7 +39,7 @@ func NewSearchService() (*TiSearchService, error) {
 		logging.Warnf("create es client error %s", err)
 		return nil, err
 	}
-	dbDSN := "root:@tcp(10.9.118.254:3306)/tisearch?charset=utf8&timeout=1s"
+	dbDSN := "root:@tcp(192.168.195.68:4000)/tisearch?charset=utf8&timeout=1s"
 	if len(dbDSNEnv) != 0 {
 		dbDSN = dbDSNEnv
 	}
@@ -53,13 +55,9 @@ func NewSearchService() (*TiSearchService, error) {
 	return s, nil
 }
 
-// SELECT /*+ SEARCH(‘run out of time’ IN NATURAL LANGUAGE MODE) */ * from tweets;
-// SELECT /*+ SEARCH(‘+run +out -money’ IN BOOLEAN MODE) */ * from tweets;
-//
-//
 func (s *TiSearchService) SearchTweetByKeyword(keyword string) ([]model.Tweet, error) {
 	results := make([]model.Tweet, 0)
-	if err := s.dbClient.Raw("SELECT /*+ SEARCH('?' IN NATURAL LANGUAGE MODE) */ * from tweets;", keyword).Scan(&results).Error; err != nil {
+	if err := s.dbClient.Raw("SELECT /*+ SEARCH('" + keyword + "' IN NATURAL LANGUAGE MODE) */ * from tweets limit 200").Scan(&results).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return nil, nil
 		}
@@ -67,11 +65,53 @@ func (s *TiSearchService) SearchTweetByKeyword(keyword string) ([]model.Tweet, e
 	return results, nil
 }
 
-func (s *TiSearchService) SearchAlbum(keyword string) ([]model.Album, error) {
-	results := make([]model.Album, 0)
-	if err := s.dbClient.Raw("SELECT /*+ SEARCH('?' IN NATURAL LANGUAGE MODE) */ * from tweets;", keyword).Scan(&results).Error; err != nil {
+func (s *TiSearchService) SuggestTweet(keyword string) ([]string, error) {
+	suggester := elastic.NewCompletionSuggester("tweet-suggestion").Text(keyword).Field("words")
+	searchSource := elastic.NewSearchSource().
+		Suggester(suggester).
+		FetchSource(false).
+		TrackScores(true)
+	searchResult, err := s.esClient.Search().Index(tweetSuggestionIndex).Type("words").SearchSource(searchSource).Do(context.TODO())
+	if err != nil {
+		return nil, err
+	}
+	stickerSuggest := searchResult.Suggest["tweet-suggestion"]
+	fmt.Println(searchResult.Suggest["tweet-suggestion"])
+	var results []string
+	for _, options := range stickerSuggest {
+		for _, option := range options.Options {
+			results = append(results, option.Text)
+		}
+	}
+	return results, nil
+}
+
+func (s *TiSearchService) SearchUser(keyword string) ([]model.User, error) {
+	results := make([]model.User, 0)
+	if err := s.dbClient.Raw("SELECT /*+ SEARCH('" + keyword + "' IN NATURAL LANGUAGE MODE) */ * from users limit 200").Scan(&results).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			return nil, nil
+		}
+	}
+	return results, nil
+}
+
+func (s *TiSearchService) SuggestUser(keyword string) ([]string, error) {
+	suggester := elastic.NewCompletionSuggester("user-suggestion").Text(keyword).Field("words")
+	searchSource := elastic.NewSearchSource().
+		Suggester(suggester).
+		FetchSource(false).
+		TrackScores(true)
+	searchResult, err := s.esClient.Search().Index(userSuggestionIndex).Type("words").SearchSource(searchSource).Do(context.TODO())
+	if err != nil {
+		return nil, err
+	}
+	stickerSuggest := searchResult.Suggest["user-suggestion"]
+	fmt.Println(searchResult.Suggest["user-suggestion"])
+	var results []string
+	for _, options := range stickerSuggest {
+		for _, option := range options.Options {
+			results = append(results, option.Text)
 		}
 	}
 	return results, nil

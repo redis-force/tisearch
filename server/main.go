@@ -20,12 +20,12 @@ func main() {
 	search := mux.Group("/api/v1/search")
 	{
 
-		search.GET("/album", hdl.SearchAlbum)
+		search.GET("/user", hdl.SearchUser)
 		search.GET("/tweet", hdl.SearchTweet)
 	}
 	suggest := mux.Group("/api/v1/suggest")
 	{
-		suggest.GET("/album", hdl.SuggestAlbum)
+		suggest.GET("/user", hdl.SuggestUser)
 		suggest.GET("/tweet", hdl.SuggestTweet)
 	}
 
