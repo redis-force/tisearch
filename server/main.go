@@ -17,12 +17,12 @@ func main() {
 
 	mux := gin.New()
 	mux.Use(gin.Logger(), gin.Recovery())
-	search := mux.Group("/api/v1/search")
-	{
+	mux.GET("/api/v1/search", hdl.Search)
+	// {
 
-		search.GET("/user", hdl.SearchUser)
-		search.GET("/tweet", hdl.SearchTweet)
-	}
+	// search.GET("/user", hdl.SearchUser)
+	// search.GET("/tweet", hdl.SearchTweet)
+	// }
 	suggest := mux.Group("/api/v1/suggest")
 	{
 		suggest.GET("/user", hdl.SuggestUser)
