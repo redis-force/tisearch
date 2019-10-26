@@ -12,5 +12,5 @@ type SearchResult struct {
 
 type Row struct {
 	DocID  int64
-	Render string
+	Render map[string][]string
 }
