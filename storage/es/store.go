@@ -113,3 +113,9 @@ func (s *EsStore) Search(ctx context.Context, db string, table string, query str
 	}
 	return result, nil
 }
+
+func (s *EsStore) Delete(ctx context.Context, db string, table string, docID int64) error {
+	index := indexName(db, table)
+	_, err := s.esClient.Delete().Index(index).Type(indexType).Id(strconv.Itoa(int(docID))).Refresh("true").Do(ctx)
+	return err
+}

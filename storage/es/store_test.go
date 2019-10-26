@@ -31,7 +31,7 @@ func TestEsStore(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	result, err := es.Search(context.TODO(), "test", "test", "user:*name")
+	result, err := es.Search(context.TODO(), "test", "test", "thi")
 	if err != nil {
 		t.Fatal(err)
 	}

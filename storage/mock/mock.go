@@ -17,3 +17,6 @@ func (s *MockStore) Put(ctx context.Context, db string, table string, docID int6
 
 func (s *MockStore) Search(ctx context.Context, db string, table string, query string) (*model.SearchResult, error) {
 }
+
+func (s *MockStore) Delete(ctx context.Context, db string, table string, docID int64) (*model.SearchResult, error) {
+}
