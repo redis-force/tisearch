@@ -86,8 +86,8 @@ func (s *EsStore) Search(ctx context.Context, db string, table string, query str
 	if err != nil {
 		return nil, err
 	}
-	mm := indexMapping[index].(map[string]interface{})["mappings"].(map[string]interface{})[indexType].(map[string]interface{})
-	highlighter := elastic.NewHighlight().PreTags("hit").PostTags("/hit")
+	mm := indexMapping[index].(map[string]interface{})["mappings"].(map[string]interface{})[indexType].(map[string]interface{})["properties"].(map[string]interface{})
+	highlighter := elastic.NewHighlight().PreTags("<hit>").PostTags("</hit>")
 	for k := range mm {
 		highlighter.Field(k)
 	}
