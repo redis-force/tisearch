@@ -53,7 +53,7 @@ func (s *EsStore) Create(ctx context.Context, db, table string, fields []model.F
 
 	properties := make(map[string]interface{})
 	for _, f := range fields {
-		properties[f.Name] = map[string]interface{}{"type": "string"}
+		properties[f.Name] = map[string]interface{}{"type": "text", "analyzer": "ik_max_word", "search_analyzer": "ik_max_word"}
 	}
 	propertiesStr, _ := json.Marshal(map[string]interface{}{"properties": properties})
 	// _, err = s.esClient.PutMapping().Type(indexType).Index(index).BodyString(string(propertiesStr)).Do(ctx)
@@ -70,7 +70,7 @@ func (s *EsStore) Put(ctx context.Context, db string, table string, docID int64,
 		data[f.Name] = f.Value
 	}
 	_, err := s.esClient.Index().Index(index).Type(indexType).Id(strconv.Itoa(int(docID))).BodyJson(data).Do(ctx)
-	logging.Debugf("write index to %s, body %v", index, data)
+	// logging.Debugf("write index to %s, body %v", index, data)
 	if err != nil {
 		return err
 	}
