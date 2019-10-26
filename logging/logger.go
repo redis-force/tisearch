@@ -37,5 +37,5 @@ func Error(val interface{}) {
 }
 
 func Fatal(val interface{}) {
-	fmt.Printf("ERROR: %v\n", val)
+	panic(fmt.Sprintf("ERROR: %v\n", val))
 }
