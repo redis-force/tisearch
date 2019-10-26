@@ -53,7 +53,7 @@ func (s *EsStore) Create(ctx context.Context, db, table string, fields []model.F
 
 	properties := make(map[string]interface{})
 	for _, f := range fields {
-		properties[f.Name] = map[string]interface{}{"type": "text", "analyzer": "ik_max_word", "search_analyzer": "ik_max_word"}
+		properties[f.Name] = map[string]interface{}{"type": "text", "analyzer": "ik_max_word", "search_analyzer": "ik_smart"}
 	}
 	propertiesStr, _ := json.Marshal(map[string]interface{}{"properties": properties})
 	// _, err = s.esClient.PutMapping().Type(indexType).Index(index).BodyString(string(propertiesStr)).Do(ctx)
@@ -87,11 +87,14 @@ func (s *EsStore) Search(ctx context.Context, db string, table string, query str
 		return nil, err
 	}
 	mm := indexMapping[index].(map[string]interface{})["mappings"].(map[string]interface{})[indexType].(map[string]interface{})["properties"].(map[string]interface{})
-	highlighter := elastic.NewHighlight().PreTags("<hit>").PostTags("</hit>")
+	highlighter := elastic.NewHighlight().PreTags("<em>").PostTags("</em>")
+	var fields []string
 	for k := range mm {
+		fields = append(fields, k)
 		highlighter.Field(k)
 	}
-	q := elastic.NewQueryStringQuery(query)
+	q := elastic.NewMultiMatchQuery(query, fields...).Fuzziness("1")
+	// q := elastic.NewMatchQuery(name string, text interface{})
 	searchResult, err := s.esClient.Search(index).Query(q).Type(indexType).Size(1000).IgnoreUnavailable(true).Highlight(highlighter).Do(ctx)
 	if err != nil {
 		logging.Warnf("search db=%s table %s query=%s error", db, table, query)

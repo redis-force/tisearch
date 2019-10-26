@@ -39,7 +39,7 @@ func NewSearchService() (*TiSearchService, error) {
 		logging.Warnf("create es client error %s", err)
 		return nil, err
 	}
-	dbDSN := "root:@tcp(192.168.195.68:4000)/tisearch?charset=utf8&timeout=1s"
+	dbDSN := "root:@tcp(10.9.118.254:4000)/tisearch?charset=utf8&timeout=1s"
 	if len(dbDSNEnv) != 0 {
 		dbDSN = dbDSNEnv
 	}

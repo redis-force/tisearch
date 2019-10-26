@@ -12,13 +12,14 @@ type Tweet struct {
 }
 
 type User struct {
-	Gender      int       `json:"gender" gorm:"column:gender"`
-	Name        string    `json:"name" gorm:"column:name"`
-	Location    string    `json:"location" gorm:"column:location"`
-	Picture     string    `json:"picture" gorm:"column:picture"`
-	Cars        string    `json:"cars" gorm:"column:cars"`
-	Interests   string    `json:"interests" gorm:"column:interests"`
-	Birthday    time.Time `json:"birthday" gorm:"column:birthday,type:timestamp"`
+	ID       int64  `json:"id" gorm:"primary_key,column:id"`
+	Gender   int    `json:"gender" gorm:"column:gender"`
+	Name     string `json:"name" gorm:"column:name"`
+	Location string `json:"location" gorm:"column:location"`
+	Picture  string `json:"picture" gorm:"column:picture"`
+	Labels   string `json:"cars" gorm:"column:labels"`
+	// Interests   string    `json:"interests" gorm:"column:interests"`
+	Birthday    time.Time `json:"birthday" gorm:"column:birthday"`
 	Coordinates string    `json:"coordinates" gorm:"column:coordinates"`
 }
 
