@@ -9,7 +9,7 @@ import (
 
 func init() {
 	st, err := es.NewEsStore()
-	if err != nil {
+	if err == nil {
 		defaultStore = st
 	}
 }
