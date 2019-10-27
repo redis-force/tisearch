@@ -44,6 +44,7 @@ func NewSearchService() (*TiSearchService, error) {
 		dbDSN = dbDSNEnv
 	}
 	db, err := gorm.Open("mysql", dbDSN)
+	db.BlockGlobalUpdate(false)
 	if err != nil {
 		return nil, err
 	}

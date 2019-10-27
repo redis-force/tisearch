@@ -2,6 +2,7 @@ package model
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 	"time"
 )
@@ -47,11 +48,12 @@ type SuggestionResponse struct {
 }
 
 type SearchResponse struct {
-	Code  int         `json:"code"`
-	Error string      `json:"error"`
-	Type  string      `json:"type"`
-	Data  interface{} `json:"data"`
-	Plans []SQLPlan   `json:"plans"`
+	Code        int         `json:"code"`
+	Error       string      `json:"error"`
+	Type        string      `json:"type"`
+	Data        interface{} `json:"data"`
+	Plans       []SQLPlan   `json:"plans"`
+	RowAffected int64       `json:"row_affected"`
 }
 type SQLPlan struct {
 	ID           string `json:"id" gorm:"column:id"`
@@ -61,6 +63,7 @@ type SQLPlan struct {
 }
 
 func (u User) MarshalJSON() ([]byte, error) {
+	fmt.Println(u.Gender)
 	us := user{
 		ID:          u.ID,
 		Gender:      "male",

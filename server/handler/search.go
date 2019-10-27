@@ -65,16 +65,22 @@ func (h *Handler) Search(c *gin.Context) {
 	}
 	var data interface{}
 	var plans []model.SQLPlan
+	rowAffected := int64(-1)
 	if tp == "tweets" {
 		data, plans, err = h.srv.SearchTweet(keyword, query)
 	} else if tp == "users" {
 		data, plans, err = h.srv.SearchUser(keyword, query)
 	} else {
-		data, plans, err = h.srv.Execute(query)
+		data = make([]interface{}, 0)
+		rowAffected, plans, err = h.srv.Execute(query)
 	}
 	if err != nil {
 		c.AbortWithStatusJSON(500, model.SearchResponse{Code: 500, Error: err.Error()})
 		return
 	}
-	c.JSON(200, model.SearchResponse{Code: 0, Error: "", Data: data, Type: tp, Plans: plans})
+	if rowAffected != -1 {
+		c.JSON(200, model.SearchResponse{Code: 204, Error: "", Data: data, Type: tp, Plans: plans, RowAffected: rowAffected})
+		return
+	}
+	c.JSON(200, model.SearchResponse{Code: 0, Error: "", Data: data, Type: tp, Plans: plans, RowAffected: rowAffected})
 }
