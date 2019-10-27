@@ -53,13 +53,13 @@ func (s *EsStore) Create(ctx context.Context, db, table string, fields []model.F
 
 	properties := make(map[string]interface{})
 	for _, f := range fields {
-		properties[f.Name] = map[string]interface{}{"type": "text", "analyzer": "ik_max_word", "search_analyzer": "ik_smart"}
+		properties[f.Name] = map[string]interface{}{"type": "text", "analyzer": "ik_smart", "search_analyzer": "ik_smart"}
 	}
 	propertiesStr, _ := json.Marshal(map[string]interface{}{"properties": properties})
 	// _, err = s.esClient.PutMapping().Type(indexType).Index(index).BodyString(string(propertiesStr)).Do(ctx)
 	body := fmt.Sprintf(mapping, indexType, propertiesStr)
 	s.esClient.CreateIndex(index).BodyString(body).Do(ctx)
-	logging.Debugf("create db=%s table=%s mapping=%q\n", db, table, propertiesStr)
+	logging.Debugf("create db=%s table=%s mapping=%q\n", db, table, body)
 	return
 }
 
