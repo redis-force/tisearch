@@ -63,6 +63,9 @@ func (s *TiSearchService) SearchTweet(keyword string, query string) (results []m
 			err = nil
 		}
 	}
+	if len(results) > 200 {
+		results = results[:200]
+	}
 	plans = make([]model.SQLPlan, 0)
 	s.dbClient.Raw("EXPLAIN " + sql).Scan(&plans)
 	return
@@ -96,6 +99,9 @@ func (s *TiSearchService) SearchUser(keyword string, query string) (results []mo
 		if gorm.IsRecordNotFoundError(err) {
 			err = nil
 		}
+	}
+	if len(results) > 200 {
+		results = results[:200]
 	}
 	plans = make([]model.SQLPlan, 0)
 	s.dbClient.Raw("EXPLAIN " + sql).Scan(&plans)

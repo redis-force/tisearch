@@ -7,10 +7,10 @@ import (
 )
 
 type Tweet struct {
-	ID      int64     `json:"id" gorm:"column:id"`
-	User    string    `json:"user" gorm:"column:user"`
-	Content string    `json:"content" gorm:"column:content"`
-	Time    time.Time `json:"time" gorm:"column:time,type:timestamp"`
+	ID      int64  `json:"id" gorm:"column:id"`
+	User    string `json:"user" gorm:"column:user"`
+	Content string `json:"content" gorm:"column:content"`
+	Time    string `json:"time" gorm:"column:time"`
 }
 type User struct {
 	ID          int64     `json:"id" gorm:"primary_key,column:id"`
@@ -25,15 +25,15 @@ type User struct {
 	Coordinates string    `json:"coordinates" gorm:"column:coordinates"`
 }
 type user struct {
-	ID          int64     `json:"id" `
-	Gender      string    `json:"gender"`
-	Name        string    `json:"name"`
-	Location    string    `json:"location"`
-	Picture     string    `json:"picture"`
-	Interests   []string  `json:"interests"`
-	Cars        []string  `json:"cars"`
-	Birthday    time.Time `json:"birthday"`
-	Coordinates []string  `json:"coordinates"`
+	ID          int64    `json:"id" `
+	Gender      string   `json:"gender"`
+	Name        string   `json:"name"`
+	Location    string   `json:"location"`
+	Picture     string   `json:"picture"`
+	Interests   []string `json:"interests"`
+	Cars        []string `json:"cars"`
+	Birthday    string   `json:"birthday"`
+	Coordinates []string `json:"coordinates"`
 }
 
 type Suggestion struct {
@@ -54,10 +54,10 @@ type SearchResponse struct {
 	Plans []SQLPlan   `json:"plans"`
 }
 type SQLPlan struct {
-	ID            string `json:"id" gorm:"column:id"`
-	Count         string `json:"count" gorm:"column:count"`
-	Task          string `json:"task" gorm:"column:task"`
-	OperationInfo string `json:"operation_info" gorm:"column:operation_info"`
+	ID           string `json:"id" gorm:"column:id"`
+	Count        string `json:"count" gorm:"column:count"`
+	Task         string `json:"task" gorm:"column:task"`
+	OperatorInfo string `json:"operation_info" gorm:"column:operator info"`
 }
 
 func (u User) MarshalJSON() ([]byte, error) {
@@ -67,7 +67,7 @@ func (u User) MarshalJSON() ([]byte, error) {
 		Name:        u.Name,
 		Location:    u.Location,
 		Picture:     u.Picture,
-		Birthday:    u.Birthday,
+		Birthday:    u.Birthday.Format("2006-01-02 15:04:05"),
 		Coordinates: strings.Split(u.Coordinates, ","),
 	}
 	if u.Gender == 2 {

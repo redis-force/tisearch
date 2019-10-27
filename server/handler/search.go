@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	regex = regexp.MustCompile(`.*AGAINST\s+\('(.*)'.*\).*`)
+	regex = regexp.MustCompile(`.*AGAINST\s{0,}\('(.*)'.*\).*`)
 )
 
 func mathQuery(q string) (table, keywrod, query string, err error) {
@@ -39,6 +39,7 @@ func mathQuery(q string) (table, keywrod, query string, err error) {
 	fmt.Println(found)
 	if len(found) == 2 {
 		keywrod = found[1]
+		keywrod = strings.Replace(strings.Replace(keywrod, " and ", " AND ", -1), ":", "_", -1)
 	}
 	return
 }
