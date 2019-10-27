@@ -18,16 +18,6 @@ func main() {
 	mux := gin.New()
 	mux.Use(gin.Logger(), gin.Recovery())
 	mux.GET("/api/v1/search", hdl.Search)
-	// {
-
-	// search.GET("/user", hdl.SearchUser)
-	// search.GET("/tweet", hdl.SearchTweet)
-	// }
-	suggest := mux.Group("/api/v1/suggest")
-	{
-		suggest.GET("/user", hdl.SuggestUser)
-		suggest.GET("/tweet", hdl.SuggestTweet)
-	}
 
 	fmt.Println(mux.Run("0.0.0.0:8080"))
 }

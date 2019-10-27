@@ -93,8 +93,11 @@ func (s *EsStore) Search(ctx context.Context, db string, table string, query str
 		fields = append(fields, k)
 		highlighter.Field(k)
 	}
-	q := elastic.NewMultiMatchQuery(query, fields...).Fuzziness("1")
-	// q := elastic.NewQueryStringQuery(query).Fuzziness("1")
+	var q elastic.Query
+	q = elastic.NewMultiMatchQuery(query, fields...).Fuzziness("1")
+	if table == "users" {
+		q = elastic.NewQueryStringQuery(query).Fuzziness("1")
+	}
 	searchResult, err := s.esClient.Search(index).Query(q).Type(indexType).Size(1000).IgnoreUnavailable(true).Highlight(highlighter).Do(ctx)
 	if err != nil {
 		logging.Warnf("search db=%s table %s query=%s error", db, table, query)

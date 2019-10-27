@@ -55,9 +55,9 @@ func NewSearchService() (*TiSearchService, error) {
 	return s, nil
 }
 
-func (s *TiSearchService) SearchTweet(keyword string) (results []model.Tweet, plans []model.SQLPlan, err error) {
+func (s *TiSearchService) SearchTweet(keyword string, query string) (results []model.Tweet, plans []model.SQLPlan, err error) {
 	results = make([]model.Tweet, 0)
-	sql := "SELECT /*+ SEARCH('" + keyword + "' IN NATURAL LANGUAGE MODE) */ id,time,user,polarity,content from tweets limit 200"
+	sql := "SELECT /*+ SEARCH('" + keyword + "' IN NATURAL LANGUAGE MODE) */" + query
 	if err = s.dbClient.Raw(sql).Scan(&results).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			err = nil
@@ -89,9 +89,9 @@ func (s *TiSearchService) SuggestTweet(keyword string) ([]string, error) {
 	return results, nil
 }
 
-func (s *TiSearchService) SearchUser(keyword string) (results []model.User, plans []model.SQLPlan, err error) {
+func (s *TiSearchService) SearchUser(keyword string, query string) (results []model.User, plans []model.SQLPlan, err error) {
 	results = make([]model.User, 0)
-	sql := "SELECT /*+ SEARCH('" + keyword + "' IN NATURAL LANGUAGE MODE) */ id,name,location,picture,birthday,birthday,coordinates,gender,labels from users limit 200"
+	sql := "SELECT /*+ SEARCH('" + keyword + "' IN NATURAL LANGUAGE MODE) */" + query
 	if err := s.dbClient.Raw(sql).Scan(&results).Error; err != nil {
 		if gorm.IsRecordNotFoundError(err) {
 			err = nil
@@ -99,6 +99,14 @@ func (s *TiSearchService) SearchUser(keyword string) (results []model.User, plan
 	}
 	plans = make([]model.SQLPlan, 0)
 	s.dbClient.Raw("EXPLAIN " + sql).Scan(&plans)
+	return
+}
+
+func (s *TiSearchService) Execute(query string) (affeted int64, plans []model.SQLPlan, err error) {
+	affeted = s.dbClient.Exec(query).RowsAffected
+	err = s.dbClient.Error
+	plans = make([]model.SQLPlan, 0)
+	s.dbClient.Raw("EXPLAIN " + query).Scan(&plans)
 	return
 }
 
